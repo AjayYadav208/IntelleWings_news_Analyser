@@ -1,0 +1,53 @@
+# Define the version of the Docker Compose file format
+version: '3.8'
+
+services:
+  # Define the 'app' service for your application (likely a Python Streamlit app)
+  app:
+    # Build the Docker image for the app from the current directory (where the Dockerfile is located)
+    build: .
+    
+    # Map the local port 8501 to port 8501 inside the container (default for Streamlit apps)
+    ports:
+      - "8501:8501"
+    
+    # Set environment variables for the container
+    environment:
+      # The MongoDB URI to connect to the MongoDB container (service)
+      - MONGO_URI=mongodb://mongo:27017/
+    
+    # Define that the 'app' service depends on the 'mongo' service to ensure MongoDB starts first
+    depends_on:
+      - mongo
+    
+    # Mount the current directory (host) to the /app directory inside the container
+  
+    volumes:
+      - .:/app
+    
+    # Specify the network this service will use for communication with other containers
+    networks:
+      - app-network
+
+  # Define the 'mongo' service, which uses the latest MongoDB image from Docker Hub
+  mongo:
+    # Use the official MongoDB image from Docker Hub
+    image: mongo:latest
+    
+    # Mount a named volume to persist MongoDB's data even after the container is removed
+    volumes:
+      - mongo_data:/data/db
+    
+    # Specify the network this service will use to communicate with the 'app' service
+    networks:
+      - app-network
+
+# Define networks for communication between containers
+networks:
+  app-network:
+    # Use the 'bridge' driver, which is the default network driver in Docker
+    driver: bridge
+
+# Define persistent volumes for MongoDB to store data
+volumes:
+  mongo_data:

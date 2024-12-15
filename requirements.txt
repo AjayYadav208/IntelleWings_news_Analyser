@@ -1,0 +1,7 @@
+streamlit
+altair>=4.2.0
+nltk
+spacy
+pymongo
+requests
+beautifulsoup4
